@@ -13,7 +13,7 @@ type Message struct {
 }
 type User struct {
 	gorm.Model
-	Name     string `gorm:"type:varchar(100)"`
-	Email    string `gorm:"uniqueIndex"`
-	Password string
+	Name     string `gorm:"type:varchar(100)" json:"name"`
+	Email    string `gorm:"uniqueIndex" json:"email"`
+	Password string `gorm:"type:varchar(100)" json:"password"`
 }
