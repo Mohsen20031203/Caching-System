@@ -17,4 +17,5 @@ type User struct {
 	Email    string `gorm:"uniqueIndex" json:"email"`
 	Password string `gorm:"type:varchar(100)" json:"password"`
 	Online   bool   `json:"online"`
+	Massages []Message
 }
