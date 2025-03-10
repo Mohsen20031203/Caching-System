@@ -29,7 +29,7 @@ func found() (string, error) {
 		return checkData, nil
 	}
 
-	req, err := http.NewRequest("GET", "https://api.meteomatics.com/2025-03-08T00:00:00Z/t_2m:C/36.3,59.6/json", nil)
+	req, err := http.NewRequest("GET", "https://api.meteomatics.com/2025-03-09T00:00:00Z/t_2m:C/36.3,59.6/json", nil)
 	if err != nil {
 		return "", err
 	}
