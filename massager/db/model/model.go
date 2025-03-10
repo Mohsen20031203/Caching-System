@@ -16,4 +16,5 @@ type User struct {
 	Name     string `gorm:"type:varchar(100)" json:"name"`
 	Email    string `gorm:"uniqueIndex" json:"email"`
 	Password string `gorm:"type:varchar(100)" json:"password"`
+	Online   bool   `json:"online"`
 }
