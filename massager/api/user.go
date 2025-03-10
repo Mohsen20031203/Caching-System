@@ -17,5 +17,12 @@ func (s *Server) CreatUser(ctx *gin.Context) {
 		})
 		return
 	}
+	err = s.Store.CreatUser(user)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "internal server error",
+		})
+	}
+	ctx.JSON(http.StatusCreated, user)
 
 }
