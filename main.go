@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
@@ -20,66 +19,56 @@ func redisChack(addres string) *redis.Client {
 
 var rdb *redis.Client
 var ctx = context.Background()
-var cacheKey = "weather_mashhad"
+var numberRequest int64 = 5
 
-func found() (string, error) {
-	checkData, err := rdb.Get(ctx, cacheKey).Result()
-	if err == nil {
-		fmt.Println("data found in chache")
-		return checkData, nil
-	}
+const windowSize = time.Minute
 
-	req, err := http.NewRequest("GET", "https://api.meteomatics.com/2025-03-09T00:00:00Z/t_2m:C/36.3,59.6/json", nil)
-	if err != nil {
-		return "", err
-	}
-	req.SetBasicAuth("iran_salehi_mohsen", "FtB6c4eSE4")
+func apii(w http.ResponseWriter, r *http.Request) {
+	userID := r.Header.Get("User-ID")
 
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("%d", resp.StatusCode)
-	}
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return "", err
-	}
-	weatherData := string(body)
-
-	err = rdb.Set(ctx, cacheKey, weatherData, 1*time.Minute).Err()
-	if err != nil {
-		return "", err
-	}
-	return weatherData, nil
-}
-
-func Weather(w http.ResponseWriter, c *http.Request) {
-	data, err := found()
-	if err != nil {
-		http.Error(w, "not found", http.StatusInternalServerError)
+	if !checkRateLimit(userID) {
+		http.Error(w, "Rate limit exceeded", http.StatusTooManyRequests)
 		return
 	}
+	fmt.Fprintf(w, "Request successful")
 
-	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte(data))
+}
+
+func checkRateLimit(userID string) bool {
+	key := fmt.Sprintf("user:%s:requests", userID)
+
+	pipe := rdb.Pipeline()
+
+	pipe.Incr(ctx, key)
+
+	pipe.Expire(ctx, key, windowSize)
+
+	cmds, err := pipe.Exec(ctx)
+	if err != nil {
+		log.Printf("Error executing Redis pipeline: %v", err)
+		return false
+	}
+	requestCount := cmds[0].(*redis.IntCmd).Val()
+	if requestCount < numberRequest {
+		return false
+	}
+	return true
+
 }
 
 func main() {
 	rdb = redisChack("localhost:6379")
 	_, err := rdb.Ping(ctx).Result()
 	if err != nil {
-		log.Fatalf("اتصال به Redis موفقیت‌آمیز نبود: %v", err)
+		log.Fatalf("not connect %v", err)
 	} else {
-		fmt.Println("اتصال به Redis برقرار شد!")
+		fmt.Println("connect in server")
 	}
 
-	http.HandleFunc("/weather", Weather)
+	http.HandleFunc("/api/", apii)
 	err = http.ListenAndServe(":8082", nil)
+	if err != nil {
+		panic(err)
+	}
 
 }
