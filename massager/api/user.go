@@ -17,4 +17,5 @@ func (s *Server) CreatUser(ctx *gin.Context) {
 		})
 		return
 	}
+
 }
