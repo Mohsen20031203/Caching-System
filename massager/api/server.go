@@ -45,10 +45,11 @@ func (s *Server) setupRouter() {
 	Users.POST("/user", s.CreatUser)
 	Users.GET("/users", s.GetUsers)
 
+	Users.POST("/send", s.Send)
+	Users.PUT("/read/:id", s.Read)
+
 	Massage := router.Group("/massage")
 	Massage.Use(s.GetCache)
-	Massage.POST("/send", s.Send)
-	Massage.PUT("/read/:id", s.Read)
 
 	s.Router = router
 }
