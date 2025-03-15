@@ -4,12 +4,11 @@ import (
 	models "chach/massager/db/model"
 )
 
-func (s *Storege) Getmassages(id int) ([]models.Message, error) {
-	var massages models.Message
+func (s *Storege) Send(massages *models.Message) error {
 
-	err := s.DB.First(id, &massages).Error
+	err := s.DB.Create(&massages).Error
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return nil, nil
+	return nil
 }

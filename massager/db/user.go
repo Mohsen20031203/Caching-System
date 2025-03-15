@@ -16,7 +16,7 @@ func (s *Storege) CreatUser(user *models.User) error {
 func (s *Storege) GetUser(id int64) (*models.User, error) {
 	var user models.User
 
-	err := s.DB.First(&user, id).Error
+	err := s.DB.Preload("SentMessages").Preload("ReceivedMessages").First(&user, id).Error
 	if err != nil {
 		return nil, err
 	}

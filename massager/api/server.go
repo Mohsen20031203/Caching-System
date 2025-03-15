@@ -43,7 +43,7 @@ func (s *Server) setupRouter() {
 	Users.GET("/users", s.GetUsers)
 
 	Massage := router.Group("/massage")
-	Massage.GET("")
+	Massage.POST("/send", s.Send)
 
 	s.Router = router
 }

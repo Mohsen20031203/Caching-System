@@ -1,19 +1,27 @@
 package api
 
 import (
+	models "chach/massager/db/model"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
-func (s *Server) GetMassages(ctx *gin.Context) {
-	id := ctx.Param("id")
+func (s *Server) Send(ctx *gin.Context) {
+	var massage models.Message
 
-	_, err := strconv.ParseInt(id, 10, 64)
+	err := ctx.Bind(&massage)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "id is not valid"})
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": "bad request",
+		})
 		return
 	}
-
+	err = s.Store.Send(&massage)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "internal server error",
+		})
+	}
+	ctx.JSON(http.StatusCreated, massage)
 }
