@@ -1,6 +1,8 @@
 package db
 
-import models "chach/massager/db/model"
+import (
+	models "chach/massager/db/model"
+)
 
 func (s *Storege) Getmassages(id int) ([]models.Message, error) {
 	var massages models.Message

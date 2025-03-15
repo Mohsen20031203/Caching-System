@@ -27,8 +27,8 @@ func NewStorege(config config.Config) (*Storege, error) {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
 
-	err = database.AutoMigrate(&models.Message{},
-		&models.User{},
+	err = database.AutoMigrate(&models.User{},
+		&models.Message{},
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)

@@ -37,7 +37,7 @@ func (s *Server) setupRouter() {
 		})
 	})
 
-	router.GET("/massages/:id")
+	router.GET("/user/:id", s.GetUser)
 	router.POST("/user", s.CreatUser)
 
 	s.Router = router
