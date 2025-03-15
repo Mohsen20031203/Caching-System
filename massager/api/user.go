@@ -51,3 +51,17 @@ func (s *Server) GetUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, retval)
 
 }
+
+func (s *Server) GetUsers(ctx *gin.Context) {
+	users, err := s.Store.GetUsers()
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		return
+	}
+
+	if len(users) == 0 {
+		users = []models.User{}
+	}
+
+	ctx.JSON(http.StatusOK, users)
+}

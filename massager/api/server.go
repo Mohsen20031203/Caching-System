@@ -39,6 +39,7 @@ func (s *Server) setupRouter() {
 
 	router.GET("/user/:id", s.GetUser)
 	router.POST("/user", s.CreatUser)
+	router.GET("/users", s.GetUsers)
 
 	s.Router = router
 }

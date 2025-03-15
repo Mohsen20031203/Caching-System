@@ -23,3 +23,9 @@ func (s *Storege) GetUser(id int64) (*models.User, error) {
 
 	return &user, err
 }
+
+func (s *Storege) GetUsers() ([]models.User, error) {
+	var users []models.User
+	err := s.DB.Order("id desc").Find(&users).Error
+	return users, err
+}
