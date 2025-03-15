@@ -20,7 +20,7 @@ func redisChack(addres string) *redis.Client {
 
 var rdb *redis.Client
 var ctx = context.Background()
-var cacheKey = "weather_mashhad"
+var cacheKey = "weather-today"
 
 func found() (string, error) {
 
