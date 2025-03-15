@@ -44,6 +44,7 @@ func (s *Server) setupRouter() {
 
 	Massage := router.Group("/massage")
 	Massage.POST("/send", s.Send)
+	Massage.PUT("/read")
 
 	s.Router = router
 }
