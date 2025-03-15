@@ -37,9 +37,13 @@ func (s *Server) setupRouter() {
 		})
 	})
 
-	router.GET("/user/:id", s.GetUser)
-	router.POST("/user", s.CreatUser)
-	router.GET("/users", s.GetUsers)
+	Users := router.Group("/users")
+	Users.GET("/user/:id", s.GetUser)
+	Users.POST("/user", s.CreatUser)
+	Users.GET("/users", s.GetUsers)
+
+	Massage := router.Group("/massage")
+	Massage.GET("")
 
 	s.Router = router
 }
