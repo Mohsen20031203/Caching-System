@@ -2,7 +2,7 @@ package db
 
 import (
 	"chach/massager/config"
-	"chach/massager/db/model"
+	models "chach/massager/db/model"
 	"fmt"
 
 	"gorm.io/driver/postgres"
@@ -27,8 +27,8 @@ func NewStorege(config config.Config) (*Storege, error) {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
 
-	err = database.AutoMigrate(&model.Message{},
-		&model.User{},
+	err = database.AutoMigrate(&models.Message{},
+		&models.User{},
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)

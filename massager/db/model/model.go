@@ -1,21 +1,27 @@
-package model
+package models
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
 
 type Message struct {
-	gorm.Model
-	ID         uint   `json:"id" gorm:"primaryKey"`
-	SenderID   uint   `json:"sender_id" gorm:"not null"`
-	ReceiverID uint   `json:"receiver_id" gorm:"not null"`
-	Content    string `json:"content" gorm:"type:text;not null"`
-	Timestamp  int64  `json:"timestamp" gorm:"not null"`
-	Read       bool   `json:"read" gorm:"default:false"`
+	ID         uint           `json:"id" gorm:"primaryKey"`
+	SenderID   uint           `json:"sender_id" gorm:"not null;index"`
+	ReceiverID uint           `json:"receiver_id" gorm:"not null;index"`
+	Content    string         `json:"content" gorm:"type:text;not null"`
+	Read       bool           `json:"read" gorm:"default:false"`
+	Status     string         `json:"status" gorm:"type:varchar(20);default:'sent'"`
+	DeletedAt  gorm.DeletedAt `gorm:"index" json:"-"`
+	CreatedAt  int64          `json:"created_at"`
 }
+
 type User struct {
-	gorm.Model
-	Name     string `gorm:"type:varchar(100)" json:"name"`
-	Email    string `gorm:"uniqueIndex" json:"email"`
-	Password string `gorm:"type:varchar(100)" json:"password"`
-	Online   bool   `json:"online"`
-	Massages []Message
+	ID           uint   `json:"id" gorm:"primaryKey"`
+	Name         string `json:"name" gorm:"type:varchar(100);not null"`
+	Phone        string `json:"phone" gorm:"type:varchar(20);unique;not null"`
+	PasswordHash string `json:"-" gorm:"type:varchar(255);not null"`
+	Online       bool   `json:"online" gorm:"default:false"`
+
+	SentMessages     []Message `gorm:"foreignKey:SenderID"`
+	ReceivedMessages []Message `gorm:"foreignKey:ReceiverID"`
 }

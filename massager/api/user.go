@@ -1,14 +1,14 @@
 package api
 
 import (
-	"chach/massager/db/model"
+	models "chach/massager/db/model"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 func (s *Server) CreatUser(ctx *gin.Context) {
-	var user model.User
+	var user models.User
 
 	err := ctx.Bind(&user)
 	if err != nil {
