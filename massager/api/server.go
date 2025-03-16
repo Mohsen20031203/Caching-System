@@ -41,7 +41,6 @@ func (s *Server) setupRouter() {
 	})
 
 	Users := router.Group("/users")
-	Users.GET("/user/:id", s.GetUser)
 	Users.POST("/user", s.CreatUser)
 	Users.GET("/users", s.GetUsers)
 
@@ -49,6 +48,7 @@ func (s *Server) setupRouter() {
 	Users.PUT("/read/:id", s.Read)
 
 	Massage := router.Group("/massage")
+	Massage.GET("/user/:id", s.GetUser)
 	Massage.Use(s.GetCache)
 	Massage.GET("/chat/:sender_id/:receiver_id", s.GetMessagesBetweenUsers)
 
