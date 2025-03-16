@@ -64,7 +64,7 @@ func (s *Server) GetMessagesBetweenUsers(ctx *gin.Context) {
 		})
 	}
 
-	ctx.Set("ms", messages)
+	ctx.Set(ctx.Request.RequestURI, messages)
 
 	ctx.JSON(http.StatusOK, messages)
 }
