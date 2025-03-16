@@ -3,6 +3,7 @@ package api
 import (
 	models "chach/massager/db/model"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -37,4 +38,33 @@ func (s *Server) Read(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "read massage"})
 
+}
+
+func (s *Server) GetMessagesBetweenUsers(ctx *gin.Context) {
+
+	senderID, err1 := strconv.ParseUint(ctx.Param("sender_id"), 10, 64)
+	if err1 != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": "bad request",
+		})
+		return
+	}
+	receiverID, err2 := strconv.ParseUint(ctx.Param("receiver_id"), 10, 64)
+	if err2 != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": "bad request",
+		})
+		return
+	}
+
+	messages, err := s.Store.GetMessagesBetweenUsers(uint(senderID), uint(receiverID))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": "bad request",
+		})
+	}
+
+	ctx.Set("ms", messages)
+
+	ctx.JSON(http.StatusOK, messages)
 }
