@@ -20,3 +20,16 @@ func (s *Storege) Read(id string) error {
 	}
 	return nil
 }
+
+func (s *Storege) GetMessagesBetweenUsers(userID1, userID2 uint) ([]models.Message, error) {
+	var massage []models.Message
+	err := s.DB.Where("(sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)",
+		userID1, userID2, userID2, userID1).
+		Order("created_at DESC").
+		Find(&massage).Error
+
+	if err != nil {
+		return nil, err
+	}
+	return massage, nil
+}
