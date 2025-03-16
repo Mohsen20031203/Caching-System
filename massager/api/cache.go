@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -19,20 +18,26 @@ type CustomResponseWriter struct {
 }
 
 func (s *Server) GetCache(c *gin.Context) {
-	senderID, err1 := strconv.ParseUint(c.Param("sender_id"), 10, 64)
-	receiverID, err2 := strconv.ParseUint(c.Param("receiver_id"), 10, 64)
 
-	if err1 != nil || err2 != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid sender or receiver ID"})
-		return
-	}
-
-	cacheKey := fmt.Sprintf("cache:%d_%d", senderID, receiverID)
-
-	val, err := s.Cache.Get(c, cacheKey).Result()
+	key := fmt.Sprintf("%s|%s|%s|%s",
+		c.Request.Method,
+		c.Request.Host,
+		c.Request.RequestURI,
+		c.Request.URL.RawQuery,
+	)
+	val, err := s.Cache.Get(c, key).Result()
 	if err == nil {
-		c.String(http.StatusOK, val)
 		c.Abort()
+
+		var jsonData interface{}
+		if json.Unmarshal([]byte(val), &jsonData) == nil {
+
+			c.JSON(http.StatusOK, jsonData)
+		} else {
+
+			c.JSON(http.StatusOK, gin.H{"data": val})
+		}
+
 		return
 	} else if err != redis.Nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "cache retrieval error"})
@@ -40,7 +45,7 @@ func (s *Server) GetCache(c *gin.Context) {
 	}
 
 	c.Next()
-	k, _ := c.Get("ms")
+	k, _ := c.Get(c.Request.RequestURI)
 
 	jsonData, err := json.Marshal(k)
 	if err != nil {
@@ -49,7 +54,7 @@ func (s *Server) GetCache(c *gin.Context) {
 	}
 
 	if c.Writer.Status() == http.StatusOK {
-		err = s.Cache.Set(c, cacheKey, jsonData, 1*time.Minute).Err()
+		err = s.Cache.Set(c, key, jsonData, 1*time.Minute).Err()
 		if err != nil {
 			return
 		}
