@@ -48,6 +48,8 @@ func (s *Server) GetUser(ctx *gin.Context) {
 		return
 	}
 
+	ctx.Set(ctx.Request.RequestURI, retval)
+
 	ctx.JSON(http.StatusOK, retval)
 
 }
