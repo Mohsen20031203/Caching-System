@@ -2,7 +2,6 @@ package api
 
 import (
 	models "chach/massager/db/model"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -70,22 +69,18 @@ func (s *Server) GetUsers(ctx *gin.Context) {
 }
 
 func (s *Server) DeleteUser(ctx *gin.Context) {
-	name := ctx.Param("name")
-
-	if name == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Name is required"})
-		return
-	}
-
 	var user models.User
-	if err := s.Store.DB.Where("name = ?", name).First(&user).Error; err != nil {
-		log.Println("User not found:", err)
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+
+	err := ctx.Bind(&user)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": "bad request",
+		})
 		return
 	}
 
-	if err := s.Store.DB.Delete(&user).Error; err != nil {
-		log.Println("Error deleting user:", err)
+	err = s.Store.DeleteUser(user.ID)
+	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete user"})
 		return
 	}

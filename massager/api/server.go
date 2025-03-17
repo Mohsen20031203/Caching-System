@@ -43,7 +43,7 @@ func (s *Server) setupRouter() {
 	Users := router.Group("/users")
 	Users.POST("/user", s.CreatUser)
 	Users.GET("/users", s.GetUsers)
-	Users.PUT("/user/:name", s.DeleteUser)
+	Users.PUT("/user", s.DeleteUser)
 
 	Users.POST("/send", s.Send)
 	Users.PUT("/read/:id", s.Read)
