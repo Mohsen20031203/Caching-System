@@ -17,35 +17,35 @@ type CustomResponseWriter struct {
 	Body *bytes.Buffer
 }
 
-func (s *Server) GetCache(c *gin.Context) {
+func (s *Server) GetCache(ctx *gin.Context) {
 
 	key := fmt.Sprintf("%s|%s|%s|%s",
-		c.Request.Method,
-		c.Request.Host,
-		c.Request.RequestURI,
-		c.Request.URL.RawQuery,
+		ctx.Request.Method,
+		ctx.Request.Host,
+		ctx.Request.RequestURI,
+		ctx.Request.URL.RawQuery,
 	)
-	val, err := s.Cache.Get(c, key).Result()
+	val, err := s.Cache.Get(ctx, key).Result()
 	if err == nil {
-		c.Abort()
+		ctx.Abort()
 
 		var jsonData interface{}
 		if json.Unmarshal([]byte(val), &jsonData) == nil {
 
-			c.JSON(http.StatusOK, jsonData)
+			ctx.JSON(http.StatusOK, jsonData)
 		} else {
 
-			c.JSON(http.StatusOK, gin.H{"data": val})
+			ctx.JSON(http.StatusOK, gin.H{"data": val})
 		}
 
 		return
 	} else if err != redis.Nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "cache retrieval error"})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "cache retrieval error"})
 		return
 	}
 
-	c.Next()
-	k, _ := c.Get(c.Request.RequestURI)
+	ctx.Next()
+	k, _ := ctx.Get(ctx.Request.RequestURI)
 
 	jsonData, err := json.Marshal(k)
 	if err != nil {
@@ -53,8 +53,8 @@ func (s *Server) GetCache(c *gin.Context) {
 		return
 	}
 
-	if c.Writer.Status() == http.StatusOK {
-		err = s.Cache.Set(c, key, jsonData, 1*time.Minute).Err()
+	if ctx.Writer.Status() == http.StatusOK {
+		err = s.Cache.Set(ctx, key, jsonData, 1*time.Minute).Err()
 		if err != nil {
 			return
 		}
