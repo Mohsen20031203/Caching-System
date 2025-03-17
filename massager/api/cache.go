@@ -58,7 +58,7 @@ func (s *Server) GetCache(ctx *gin.Context) {
 	}
 
 	if ctx.Writer.Status() == http.StatusOK {
-		err = s.Cache.Set(ctx, key, jsonData, 1*time.Minute).Err()
+		err = s.Cache.Set(ctx, key, jsonData, 10*time.Minute).Err()
 		if err != nil {
 			return
 		}

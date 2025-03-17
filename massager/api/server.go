@@ -40,17 +40,17 @@ func (s *Server) setupRouter() {
 		})
 	})
 
-	Users := router.Group("/users")
+	Users := router.Group("/route")
 	Users.POST("/user", s.CreatUser)
 	Users.GET("/users", s.GetUsers)
 	Users.PUT("/user", s.DeleteUser)
 
 	Users.POST("/send", s.Send)
 	Users.PUT("/read/:id", s.Read)
+	Users.GET("/chat/:sender_id/:receiver_id", s.GetMessagesBetweenUsers)
 
-	Massage := router.Group("/massage")
+	Massage := router.Group("/cache")
 	Massage.Use(s.GetCache)
-	Massage.GET("/chat/:sender_id/:receiver_id", s.GetMessagesBetweenUsers)
 	Massage.GET("/user/:id", s.GetUser)
 
 	s.Router = router

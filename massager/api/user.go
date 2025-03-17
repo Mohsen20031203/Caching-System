@@ -43,6 +43,9 @@ func (s *Server) GetUser(ctx *gin.Context) {
 		return
 	}
 
+	retval.PasswordHash = ""
+	retval.Phone = ""
+
 	if retval.ID == 0 {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
 		return
