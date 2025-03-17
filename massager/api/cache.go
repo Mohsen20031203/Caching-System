@@ -45,9 +45,13 @@ func (s *Server) GetCache(ctx *gin.Context) {
 	}
 
 	ctx.Next()
-	k, _ := ctx.Get(ctx.Request.RequestURI)
+	keyContext, status := ctx.Get(ctx.Request.RequestURI)
+	if !status {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "cache retrieval error"})
+		return
+	}
 
-	jsonData, err := json.Marshal(k)
+	jsonData, err := json.Marshal(keyContext)
 	if err != nil {
 		log.Println("Error marshaling data:", err)
 		return
