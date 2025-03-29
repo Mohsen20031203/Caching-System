@@ -29,12 +29,10 @@ func (s *Server) GetCache(ctx *gin.Context) {
 	if err == nil {
 		ctx.Abort()
 
-		var jsonData interface{}
-		if json.Unmarshal([]byte(val), &jsonData) == nil {
-
-			ctx.JSON(http.StatusOK, jsonData)
+		var rawData json.RawMessage
+		if err := json.Unmarshal([]byte(val), &rawData); err == nil {
+			ctx.Data(http.StatusOK, "application/json", rawData)
 		} else {
-
 			ctx.JSON(http.StatusOK, gin.H{"data": val})
 		}
 
