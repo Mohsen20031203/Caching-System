@@ -3,6 +3,7 @@ package api
 import (
 	"chach/massager/config"
 	"chach/massager/db"
+	"chach/massager/utils/auth"
 	"net/http"
 
 	"github.com/gin-contrib/gzip"
@@ -15,14 +16,21 @@ type Server struct {
 	Config config.Config
 	Router *gin.Engine
 	Cache  *redis.Client
+	Jwt    *auth.JWTtoken
 }
 
 func NewServer(storege *db.Storege, config *config.Config, rdb *redis.Client) (*Server, error) {
+
+	jwt, err := auth.NewJwt(config)
+	if err != nil {
+		return nil, err
+	}
 
 	server := &Server{
 		Store:  storege,
 		Config: *config,
 		Cache:  rdb,
+		Jwt:    jwt,
 	}
 	server.setupRouter()
 	return server, nil
