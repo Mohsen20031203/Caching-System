@@ -2,10 +2,16 @@ package db
 
 import (
 	models "chach/massager/db/model"
+	"fmt"
 	"log"
 )
 
-func (s *Storege) CreatUser(user *models.User) error {
+func (s *Storege) SignUp(user *models.User) error {
+
+	if err := s.DB.Where("phone = ?", user.Phone).First(&user).Error; err == nil {
+
+		return fmt.Errorf("User already exists")
+	}
 
 	err := s.DB.Create(user).Error
 	if err != nil {
