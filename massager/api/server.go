@@ -50,6 +50,9 @@ func (s *Server) setupRouter() {
 		})
 	})
 
+	router.POST("/login/request", s.RequestOTP)
+	router.POST("/login/verify", s.VerifyOTP)
+
 	// User routes
 	userGroup := router.Group("/")
 
