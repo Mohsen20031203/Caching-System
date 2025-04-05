@@ -70,3 +70,56 @@ func (s *Server) DeleteUser(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "User deleted successfully"})
 }
+
+func (s *Server) UpdateUser(ctx *gin.Context) {
+	phone := ctx.Param("number")
+
+	var user models.User
+
+	if err := s.Store.DB.Where("phone = ?", phone).First(&user).Error; err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+
+	var userBody models.User
+	if err := ctx.ShouldBindJSON(&userBody); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		return
+	}
+
+	if userBody.Name != "" {
+		user.Name = userBody.Name
+	}
+	if userBody.Phone != "" && userBody.Phone != user.Phone {
+
+		var existingUser models.User
+		if err := s.Store.DB.Where("phone = ?", userBody.Phone).First(&existingUser).Error; err == nil {
+
+			ctx.JSON(http.StatusConflict, gin.H{"error": "Phone number is already in use"})
+			return
+		}
+		user.Phone = userBody.Phone
+	}
+	if userBody.PasswordHash != "" {
+		user.PasswordHash = userBody.PasswordHash
+	}
+	if userBody.Bio != "" {
+		user.Bio = userBody.Bio
+	}
+	if userBody.Avatar != "" {
+		user.Avatar = userBody.Avatar
+	}
+	if userBody.Online != user.Online {
+		user.Online = userBody.Online
+	}
+
+	if err := s.Store.DB.Save(&user).Error; err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "User updated successfully",
+		"user":    user,
+	})
+}
