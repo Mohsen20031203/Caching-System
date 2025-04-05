@@ -62,13 +62,14 @@ func (s *Server) setupRouter() {
 	userGroup.PUT("/user", s.DeleteUser)
 	userGroup.POST("/send", s.Send)
 	userGroup.PUT("/read/:id", s.Read)
+	userGroup.POST("/update/:number", s.UpdateUser)
 
 	// Cache routes
 	cacheGroup := router.Group("/")
 	cacheGroup.Use(s.Jwt.CheckToken)
 	cacheGroup.Use(s.GetCache)
 
-	cacheGroup.GET("/chat/:sender_id/:receiver_id", s.GetMessagesBetweenUsers)
+	cacheGroup.GET("/chat/:sender_nubmer/:receiver_nubmer", s.GetMessagesBetweenUsers)
 	cacheGroup.GET("/user/:id", s.GetUser)
 
 	// Assign to server

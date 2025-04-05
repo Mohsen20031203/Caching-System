@@ -42,14 +42,14 @@ func (s *Server) Read(ctx *gin.Context) {
 
 func (s *Server) GetMessagesBetweenUsers(ctx *gin.Context) {
 
-	senderID, err1 := strconv.ParseUint(ctx.Param("sender_id"), 10, 64)
+	senderID, err1 := strconv.ParseUint(ctx.Param("sender_nubmer"), 10, 64)
 	if err1 != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": "bad request",
 		})
 		return
 	}
-	receiverID, err2 := strconv.ParseUint(ctx.Param("receiver_id"), 10, 64)
+	receiverID, err2 := strconv.ParseUint(ctx.Param("receiver_nubmer"), 10, 64)
 	if err2 != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": "bad request",

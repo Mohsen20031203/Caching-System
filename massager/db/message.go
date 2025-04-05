@@ -26,12 +26,12 @@ func (s *Storege) GetMessagesBetweenUsers(userID1, userID2 uint) ([]models.Messa
 	tx := s.DB.Begin()
 
 	if err := tx.Model(&models.Message{}).
-		Where("receiver_id = ? AND sender_id = ?", userID1, userID2).
+		Where("receiver_number = ? AND sender_number = ?", userID1, userID2).
 		Update("read", true).Error; err != nil {
 		tx.Rollback()
 		return nil, err
 	}
-	if err := tx.Where("(sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)",
+	if err := tx.Where("(sender_number = ? AND receiver_number = ?) OR (sender_number = ? AND receiver_number = ?)",
 		userID1, userID2, userID2, userID1).
 		Order("created_at DESC").
 		Find(&massage).Error; err != nil {

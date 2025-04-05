@@ -5,14 +5,14 @@ import (
 )
 
 type Message struct {
-	ID         uint           `json:"id" gorm:"primaryKey"`
-	SenderID   uint           `json:"sender_id" gorm:"not null;index"`
-	ReceiverID uint           `json:"receiver_id" gorm:"not null;index"`
-	Content    string         `json:"content" gorm:"type:text;not null"`
-	Read       bool           `json:"read" gorm:"default:false"`
-	Status     string         `json:"status" gorm:"type:varchar(20);default:'sent'"`
-	DeletedAt  gorm.DeletedAt `gorm:"index" json:"-"`
-	CreatedAt  int64          `json:"created_at"`
+	ID             uint           `json:"id" gorm:"primaryKey"`
+	SenderNumber   uint           `json:"sender_number" gorm:"not null;index"`
+	ReceiverNumber uint           `json:"receiver_number" gorm:"not null;index"`
+	Content        string         `json:"content" gorm:"type:text;not null"`
+	Read           bool           `json:"read" gorm:"default:false"`
+	Status         string         `json:"status" gorm:"type:varchar(20);default:'sent'"`
+	DeletedAt      gorm.DeletedAt `gorm:"index" json:"-"`
+	CreatedAt      int64          `json:"created_at"`
 }
 
 type User struct {
