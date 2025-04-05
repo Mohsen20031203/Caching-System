@@ -52,11 +52,11 @@ func (s *Server) setupRouter() {
 
 	router.POST("/login/request", s.RequestOTP)
 	router.POST("/login/verify", s.VerifyOTP)
+	router.POST("/SignUp", s.SignUp)
 
 	// User routes
 	userGroup := router.Group("/")
 
-	userGroup.POST("/user", s.CreatUser)
 	userGroup.GET("/users", s.GetUsers)
 	userGroup.PUT("/user", s.DeleteUser)
 	userGroup.POST("/send", s.Send)
