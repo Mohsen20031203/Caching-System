@@ -22,6 +22,9 @@ type User struct {
 	PasswordHash string `json:"-" gorm:"type:varchar(255);not null"`
 	Online       bool   `json:"online" gorm:"default:false"`
 
+	Bio    string `json:"bio" gorm:"type:text"`
+	Avatar string `json:"avatar" gorm:"type:varchar(255)"`
+
 	SentMessages     []Message `gorm:"foreignKey:SenderID"`
 	ReceivedMessages []Message `gorm:"foreignKey:ReceiverID"`
 }

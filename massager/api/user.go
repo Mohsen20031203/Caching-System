@@ -50,8 +50,6 @@ func (s *Server) GetUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
 		return
 	}
-	retval.ReceivedMessages = nil
-	retval.SentMessages = nil
 
 	ctx.Set(ctx.Request.RequestURI, retval)
 
