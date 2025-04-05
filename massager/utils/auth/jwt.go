@@ -92,11 +92,10 @@ func (j *JWTtoken) parseToken(ctx *gin.Context) (*jwt.Token, error) {
 }
 
 func parseToken(tokenString string, secretKey string) (*jwt.Token, error) {
-	m, n := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+	return jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 		return []byte(secretKey), nil
 	})
-	return m, n
 }
