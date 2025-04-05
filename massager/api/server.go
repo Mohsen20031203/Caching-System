@@ -43,22 +43,20 @@ func (s *Server) setupRouter() {
 	})
 
 	// User routes
-	userGroup := router.Group("/route")
-	{
-		userGroup.POST("/user", s.CreatUser)
-		userGroup.GET("/users", s.GetUsers)
-		userGroup.PUT("/user", s.DeleteUser)
-		userGroup.POST("/send", s.Send)
-		userGroup.PUT("/read/:id", s.Read)
-	}
+	userGroup := router.Group("/")
+
+	userGroup.POST("/user", s.CreatUser)
+	userGroup.GET("/users", s.GetUsers)
+	userGroup.PUT("/user", s.DeleteUser)
+	userGroup.POST("/send", s.Send)
+	userGroup.PUT("/read/:id", s.Read)
 
 	// Cache routes
-	cacheGroup := router.Group("/cache")
+	cacheGroup := router.Group("/")
 	cacheGroup.Use(s.GetCache)
-	{
-		cacheGroup.GET("/chat/:sender_id/:receiver_id", s.GetMessagesBetweenUsers)
-		cacheGroup.GET("/user/:id", s.GetUser)
-	}
+
+	cacheGroup.GET("/chat/:sender_id/:receiver_id", s.GetMessagesBetweenUsers)
+	cacheGroup.GET("/user/:id", s.GetUser)
 
 	// Assign to server
 	s.Router = router
