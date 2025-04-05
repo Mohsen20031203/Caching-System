@@ -74,9 +74,38 @@ func (s *Server) VerifyOTP(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 		return
 	}
+	user.Online = true
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Successful login",
 		"user":    user,
+	})
+}
+
+func (s *Server) SignUp(ctx *gin.Context) {
+	var user models.User
+
+	err := ctx.Bind(&user)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": "bad request",
+		})
+		return
+	}
+	err = s.Store.SignUp(&user)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "internal server error",
+		})
+	}
+	otp := fmt.Sprintf("%04d", rand.Intn(10000))
+	otpStore[user.Phone] = otp
+
+	fmt.Println("🔐 OTP code for", user.Phone, ":", otp)
+
+	ctx.SetCookie("phone", user.Phone, 3600, "/", "", false, true)
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "OTP code has been sent (simulated)",
 	})
 }
