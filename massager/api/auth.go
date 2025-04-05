@@ -19,6 +19,8 @@ func (server *Server) GenerateToken(ctx *gin.Context, username string, id int64,
 		return
 	}
 
+	ctx.Header("Authorization", "Bearer "+accessToken)
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"access_token":  accessToken,
 		"refresh_token": refreshToken,
