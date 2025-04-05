@@ -56,6 +56,7 @@ func (s *Server) setupRouter() {
 
 	// User routes
 	userGroup := router.Group("/")
+	userGroup.Use(s.Jwt.CheckTokenRole)
 
 	userGroup.GET("/users", s.GetUsers)
 	userGroup.PUT("/user", s.DeleteUser)
@@ -64,6 +65,7 @@ func (s *Server) setupRouter() {
 
 	// Cache routes
 	cacheGroup := router.Group("/")
+	cacheGroup.Use(s.Jwt.CheckTokenRole)
 	cacheGroup.Use(s.GetCache)
 
 	cacheGroup.GET("/chat/:sender_id/:receiver_id", s.GetMessagesBetweenUsers)

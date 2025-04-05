@@ -10,24 +10,19 @@ import (
 )
 
 var otpStore = make(map[string]string) // map[phone]otpCode
+var NumberUser string
 
 func (s *Server) RequestOTP(c *gin.Context) {
 	var req struct {
 		Phone string `json:"phone"`
 	}
 
-	phoneFromCookie, err := c.Cookie("phone")
-	if err == nil {
-		req.Phone = phoneFromCookie
-	} else {
-
-		if err := c.ShouldBindJSON(&req); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
-			return
-		}
-
-		c.SetCookie("phone", req.Phone, 3600, "/", "", false, true)
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		return
 	}
+
+	NumberUser = req.Phone
 
 	var user models.User
 	if err := s.Store.DB.Where("phone = ?", req.Phone).First(&user).Error; err != nil {
@@ -50,31 +45,28 @@ func (s *Server) VerifyOTP(c *gin.Context) {
 		Code string `json:"code"`
 	}
 
-	phoneFromCookie, err := c.Cookie("phone")
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Phone number not found in cookie"})
-		return
-	}
-
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 		return
 	}
 
-	expectedCode, exists := otpStore[phoneFromCookie]
+	expectedCode, exists := otpStore[NumberUser]
 	if !exists || expectedCode != req.Code {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Incorrect code"})
 		return
 	}
 
-	delete(otpStore, phoneFromCookie) // Delete the code after use
+	delete(otpStore, NumberUser) // Delete the code after use
 
 	var user models.User
-	if err := s.Store.DB.Where("phone = ?", phoneFromCookie).First(&user).Error; err != nil {
+	if err := s.Store.DB.Where("phone = ?", NumberUser).First(&user).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 		return
 	}
 	user.Online = true
+	NumberUser = ""
+
+	s.GenerateToken(c, user.Name, int64(user.ID), user.Phone)
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Successful login",

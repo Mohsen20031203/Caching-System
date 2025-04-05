@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (server *Server) generateToken(ctx *gin.Context, username string, id int64, phone string) {
+func (server *Server) GenerateToken(ctx *gin.Context, username string, id int64, phone string) {
 	accessToken, err := server.Jwt.AccessToken(username, id, phone)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
