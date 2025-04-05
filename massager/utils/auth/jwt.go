@@ -2,7 +2,6 @@ package auth
 
 import (
 	"chach/massager/config"
-	"fmt"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -55,39 +54,16 @@ func (j *JWTtoken) RefreshToken(username string, id int64) (string, error) {
 	return refreshToken.SignedString(j.JWT_REFRESH_SECRET_KEY)
 }
 
-func (j *JWTtoken) parseToken(ctx *gin.Context) (*jwt.Token, error) {
+func (j *JWTtoken) CheckToken(ctx *gin.Context) {
 	authHeader := ctx.GetHeader("Authorization")
 	if authHeader == "" {
 		ctx.JSON(401, gin.H{"error": "Authorization header missing"})
 		ctx.Abort()
-		return nil, nil
 	}
 
-	const bearerPrefix = "Bearer "
-	if len(authHeader) <= len(bearerPrefix) || authHeader[:len(bearerPrefix)] != bearerPrefix {
-		ctx.JSON(401, gin.H{"error": "Invalid Authorization header format"})
-		ctx.Abort()
-		return nil, nil
-	}
-	tokenString := authHeader[len(bearerPrefix):]
-	return parseToken(tokenString, string(j.JWT_SECRET_KEY))
-}
+	if authHeader != string(j.JWT_SECRET_KEY) {
+		ctx.JSON(401, gin.H{"error": "Authorization header missing"})
 
-func parseToken(tokenString string, secretKey string) (*jwt.Token, error) {
-	return jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		if token.Method != jwt.SigningMethodHS256 {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-		}
-		return []byte(secretKey), nil
-	})
-}
-
-func (j *JWTtoken) CheckTokenRole(ctx *gin.Context) {
-	token, err := j.parseToken(ctx)
-	if err != nil || !token.Valid {
-		ctx.JSON(401, gin.H{"error": "Invalid token"})
-		ctx.Abort()
-		return
 	}
 	ctx.Next()
 }
