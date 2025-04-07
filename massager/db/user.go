@@ -20,10 +20,10 @@ func (s *Storege) SignUp(user *models.User) error {
 	return nil
 }
 
-func (s *Storege) GetUser(id int64) (*models.User, error) {
+func (s *Storege) GetUser(number string) (*models.User, error) {
 	var user models.User
 
-	err := s.DB.First(&user, id).Error
+	err := s.DB.Where("phone = ?", number).First(&user).Error
 	if err != nil {
 		return nil, err
 	}
@@ -47,6 +47,14 @@ func (s *Storege) DeleteUser(id uint) error {
 	if err := s.DB.Delete(&user).Error; err != nil {
 		log.Println("Error deleting user:", err)
 		return err
+	}
+	return nil
+}
+
+func (s *Storege) UpdateUser(user models.User) error {
+
+	if err := s.DB.Save(&user).Error; err != nil {
+		return fmt.Errorf("Failed to update user")
 	}
 	return nil
 }

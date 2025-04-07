@@ -69,7 +69,7 @@ func (s *Server) setupRouter() {
 	cacheGroup := router.Group("/").Use(s.Jwt.CheckToken, s.GetCache)
 	{
 		cacheGroup.GET("/chat/:sender_nubmer/:receiver_nubmer", s.GetMessagesBetweenUsers)
-		cacheGroup.GET("/user/:id", s.GetUser)
+		cacheGroup.GET("/user/:number", s.GetUser)
 	}
 
 	// Assign to server
