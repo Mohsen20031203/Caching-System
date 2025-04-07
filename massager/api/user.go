@@ -101,3 +101,17 @@ func (s *Server) UpdateUser(ctx *gin.Context) {
 		"user":    user,
 	})
 }
+
+func (s *Server) Logout(ctx *gin.Context) {
+
+	phone, _ := ctx.Get(ctx.Request.RequestURI)
+	err := s.RDB.Del(ctx, phone.(string)).Err()
+	if err != nil {
+		ctx.JSON(401, gin.H{"error": "Invalid token"})
+		ctx.Abort()
+		return
+	}
+
+	ctx.JSON(200, gin.H{"message": "You have successfully logged out "})
+
+}

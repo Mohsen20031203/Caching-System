@@ -56,7 +56,7 @@ func (s *Server) setupRouter() {
 	router.POST("/refresh", s.refresh)
 
 	// User routes (with JWT middleware)
-	userGroup := router.Group("/").Use(s.CheckTokens)
+	userGroup := router.Group("/").Use(s.CheckToken)
 	{
 		userGroup.GET("/users", s.GetUsers)
 		userGroup.PUT("/user", s.DeleteUser)
@@ -66,11 +66,13 @@ func (s *Server) setupRouter() {
 	}
 
 	// Cache routes (with JWT middleware and cache middleware)
-	cacheGroup := router.Group("/").Use(s.CheckTokens, s.GetCache)
+	cacheGroup := router.Group("/").Use(s.CheckToken, s.GetCache)
 	{
 		cacheGroup.GET("/chat/:sender_nubmer/:receiver_nubmer", s.GetMessagesBetweenUsers)
 		cacheGroup.GET("/user/:number", s.GetUser)
 	}
+
+	userGroup.PUT("/logout", s.Logout)
 
 	// Assign to server
 	s.Router = router

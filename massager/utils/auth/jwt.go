@@ -55,7 +55,7 @@ func (j *JWTtoken) RefreshToken(username string, id int64) (string, error) {
 	return refreshToken.SignedString(j.JWT_REFRESH_SECRET_KEY)
 }
 
-func (j *JWTtoken) CheckToken(ctx *gin.Context) string {
+func (j *JWTtoken) GetPhone(ctx *gin.Context) string {
 	token, err := j.parseToken(ctx)
 	tokenPhone := j.getClaims(ctx, token, ClmPhone)
 

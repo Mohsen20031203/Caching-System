@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -52,15 +53,18 @@ func (server *Server) GenerateToken(ctx *gin.Context, username string, id int64,
 	})
 }
 
-func (s *Server) CheckTokens(ctx *gin.Context) {
+func (s *Server) CheckToken(ctx *gin.Context) {
 
-	phone := s.Jwt.CheckToken(ctx)
+	phone := s.Jwt.GetPhone(ctx)
 
 	err := s.RDB.Get(ctx, phone).Err()
 	if err != nil {
 		ctx.JSON(401, gin.H{"error": "Invalid token"})
 		ctx.Abort()
 		return
+	}
+	if strings.Contains(ctx.Request.RequestURI, "logout") {
+		ctx.Set(ctx.Request.RequestURI, phone)
 	}
 	ctx.Next()
 
