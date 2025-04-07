@@ -55,23 +55,22 @@ func (s *Server) setupRouter() {
 	router.POST("/SignUp", s.SignUp)
 	router.POST("/refresh", s.refresh)
 
-	// User routes
-	userGroup := router.Group("/")
-	userGroup.Use(s.Jwt.CheckToken)
+	// User routes (with JWT middleware)
+	userGroup := router.Group("/").Use(s.Jwt.CheckToken)
+	{
+		userGroup.GET("/users", s.GetUsers)
+		userGroup.PUT("/user", s.DeleteUser)
+		userGroup.POST("/send", s.Send)
+		userGroup.PUT("/read/:id", s.Read)
+		userGroup.POST("/update/:number", s.UpdateUser)
+	}
 
-	userGroup.GET("/users", s.GetUsers)
-	userGroup.PUT("/user", s.DeleteUser)
-	userGroup.POST("/send", s.Send)
-	userGroup.PUT("/read/:id", s.Read)
-	userGroup.POST("/update/:number", s.UpdateUser)
-
-	// Cache routes
-	cacheGroup := router.Group("/")
-	cacheGroup.Use(s.Jwt.CheckToken)
-	cacheGroup.Use(s.GetCache)
-
-	cacheGroup.GET("/chat/:sender_nubmer/:receiver_nubmer", s.GetMessagesBetweenUsers)
-	cacheGroup.GET("/user/:id", s.GetUser)
+	// Cache routes (with JWT middleware and cache middleware)
+	cacheGroup := router.Group("/").Use(s.Jwt.CheckToken, s.GetCache)
+	{
+		cacheGroup.GET("/chat/:sender_nubmer/:receiver_nubmer", s.GetMessagesBetweenUsers)
+		cacheGroup.GET("/user/:id", s.GetUser)
+	}
 
 	// Assign to server
 	s.Router = router
