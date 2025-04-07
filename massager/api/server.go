@@ -53,6 +53,7 @@ func (s *Server) setupRouter() {
 	router.POST("/login/request", s.RequestOTP)
 	router.POST("/login/verify", s.VerifyOTP)
 	router.POST("/SignUp", s.SignUp)
+	router.POST("/refresh", s.refresh)
 
 	// User routes
 	userGroup := router.Group("/")
