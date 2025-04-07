@@ -55,12 +55,14 @@ func (j *JWTtoken) RefreshToken(username string, id int64) (string, error) {
 	return refreshToken.SignedString(j.JWT_REFRESH_SECRET_KEY)
 }
 
-func (j *JWTtoken) CheckToken(ctx *gin.Context) {
+func (j *JWTtoken) CheckToken(ctx *gin.Context) string {
 	token, err := j.parseToken(ctx)
+	tokenPhone := j.getClaims(ctx, token, ClmPhone)
+
 	if err != nil || !token.Valid {
 		ctx.JSON(401, gin.H{"error": "Invalid token"})
 		ctx.Abort()
-		return
+		return ""
 	}
 	fmt.Println(ctx.Request.URL.Path)
 
@@ -69,8 +71,7 @@ func (j *JWTtoken) CheckToken(ctx *gin.Context) {
 		ctx.JSON(401, gin.H{"error": "Authorization header missing"})
 		ctx.Abort()
 	}
-
-	ctx.Next()
+	return tokenPhone.(string)
 }
 
 func (j *JWTtoken) parseToken(ctx *gin.Context) (*jwt.Token, error) {
