@@ -6,8 +6,8 @@ import (
 
 type Message struct {
 	ID             uint           `json:"id" gorm:"primaryKey"`
-	SenderNumber   uint           `json:"sender_number" gorm:"not null;index"`
-	ReceiverNumber uint           `json:"receiver_number" gorm:"not null;index"`
+	SenderNumber   string         `json:"sender_number" gorm:"not null;index"`
+	ReceiverNumber string         `json:"receiver_number" gorm:"not null;index"`
 	Content        string         `json:"content" gorm:"type:text;not null"`
 	Read           bool           `json:"read" gorm:"default:false"`
 	Status         string         `json:"status" gorm:"type:varchar(20);default:'sent'"`
@@ -25,6 +25,6 @@ type User struct {
 	Bio    string `json:"bio" gorm:"type:text"`
 	Avatar string `json:"avatar" gorm:"type:varchar(255)"`
 
-	SentMessages     []Message `gorm:"foreignKey:SenderID"`
-	ReceivedMessages []Message `gorm:"foreignKey:ReceiverID"`
+	SentMessages     []Message `gorm:"foreignKey:SenderNumber;references:Phone"`
+	ReceivedMessages []Message `gorm:"foreignKey:ReceiverNumber;references:Phone"`
 }
