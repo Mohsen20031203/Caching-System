@@ -15,9 +15,12 @@ func (s *Server) GetUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
 	}
+	phone := s.Jwt.GetPhone(ctx)
 
-	retval.PasswordHash = ""
-	retval.Phone = ""
+	if retval.Phone != phone {
+		retval.Phone = ""
+		retval.PasswordHash = ""
+	}
 
 	if retval.ID == 0 {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
