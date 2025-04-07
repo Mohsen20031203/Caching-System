@@ -78,27 +78,16 @@ func (s *Server) UpdateUser(ctx *gin.Context) {
 		return
 	}
 
-	if userBody.Name != "" {
+	if userBody.Name != "" && user.Name != userBody.Name {
 		user.Name = userBody.Name
 	}
-	if userBody.Phone != "" && userBody.Phone != user.Phone {
-
-		var existingUser models.User
-		if err := s.Store.DB.Where("phone = ?", userBody.Phone).First(&existingUser).Error; err == nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": "Phone number is already in use"})
-		}
-		user.Phone = userBody.Phone
-	}
-	if userBody.PasswordHash != "" {
-		user.PasswordHash = userBody.PasswordHash
-	}
-	if userBody.Bio != "" {
+	if userBody.Bio != "" && user.Bio != userBody.Bio {
 		user.Bio = userBody.Bio
 	}
-	if userBody.Avatar != "" {
+	if userBody.Avatar != "" && user.Avatar != userBody.Avatar {
 		user.Avatar = userBody.Avatar
 	}
-	if userBody.Online != user.Online {
+	if userBody.Online != user.Online && user.Online != userBody.Online {
 		user.Online = userBody.Online
 	}
 
