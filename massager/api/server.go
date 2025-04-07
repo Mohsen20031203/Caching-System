@@ -66,7 +66,7 @@ func (s *Server) setupRouter() {
 	}
 
 	// Cache routes (with JWT middleware and cache middleware)
-	cacheGroup := router.Group("/").Use(s.CheckToken, s.GetCache)
+	cacheGroup := router.Group("/").Use(s.CheckToken, s.AutoCache)
 	{
 		cacheGroup.GET("/chat/:sender_nubmer/:receiver_nubmer", s.GetMessagesBetweenUsers)
 		cacheGroup.GET("/user/:number", s.GetUser)

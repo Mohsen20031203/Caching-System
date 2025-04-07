@@ -17,7 +17,7 @@ type CustomResponseWriter struct {
 	Body *bytes.Buffer
 }
 
-func (s *Server) GetCache(ctx *gin.Context) {
+func (s *Server) AutoCache(ctx *gin.Context) {
 
 	key := fmt.Sprintf("%s|%s|%s|%s",
 		ctx.Request.Method,

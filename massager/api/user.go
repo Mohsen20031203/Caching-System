@@ -70,6 +70,13 @@ func (s *Server) DeleteUser(ctx *gin.Context) {
 func (s *Server) UpdateUser(ctx *gin.Context) {
 	phone := ctx.Param("number")
 
+	phoneToken := s.Jwt.GetPhone(ctx)
+	if phoneToken != phone {
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "You do not have permission to perform this action"})
+		return
+
+	}
+
 	user, err := s.Store.GetUser(phone)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
