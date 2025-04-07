@@ -37,7 +37,7 @@ func (j *JWTtoken) AccessToken(username string, id int64, phone string) (string,
 		string(ClmPhone):    phone,
 		string(ClmUsername): username,
 		//"exp":               time.Now().Add(Minute * 5).Unix(),
-		"exp": time.Now().Add(time.Minute * 5).Unix(),
+		"exp": time.Now().Add(time.Hour * 24).Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString(j.JWT_SECRET_KEY)
@@ -49,7 +49,7 @@ func (j *JWTtoken) RefreshToken(username string, id int64) (string, error) {
 		string(ClmId):       id,
 		string(ClmUsername): username,
 		// "exp":               time.Now().Add(time.Hour).Unix(),
-		"exp": time.Now().Add(time.Minute * 15).Unix(),
+		"exp": time.Now().Add(time.Hour * 240).Unix(),
 	}
 	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return refreshToken.SignedString(j.JWT_REFRESH_SECRET_KEY)
