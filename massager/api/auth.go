@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -37,10 +38,30 @@ func (server *Server) GenerateToken(ctx *gin.Context, username string, id int64,
 		return
 	}
 
+	tokenF := fmt.Sprintf("%s|%s", accessToken, refreshToken)
+	err = server.RDB.Set(ctx, phone, tokenF, 0).Err()
+	if err != nil {
+		return
+	}
+
 	ctx.Header("Authorization", "Bearer "+accessToken)
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"access_token":  accessToken,
 		"refresh_token": refreshToken,
 	})
+}
+
+func (s *Server) CheckTokens(ctx *gin.Context) {
+
+	phone := s.Jwt.CheckToken(ctx)
+
+	err := s.RDB.Get(ctx, phone).Err()
+	if err != nil {
+		ctx.JSON(401, gin.H{"error": "Invalid token"})
+		ctx.Abort()
+		return
+	}
+	ctx.Next()
+
 }

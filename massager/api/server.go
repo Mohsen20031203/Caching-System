@@ -15,7 +15,7 @@ type Server struct {
 	Store  *db.Storege
 	Config config.Config
 	Router *gin.Engine
-	Cache  *redis.Client
+	RDB    *redis.Client
 	Jwt    *auth.JWTtoken
 }
 
@@ -29,7 +29,7 @@ func NewServer(storege *db.Storege, config *config.Config, rdb *redis.Client) (*
 	server := &Server{
 		Store:  storege,
 		Config: *config,
-		Cache:  rdb,
+		RDB:    rdb,
 		Jwt:    jwt,
 	}
 	server.setupRouter()
@@ -56,7 +56,7 @@ func (s *Server) setupRouter() {
 	router.POST("/refresh", s.refresh)
 
 	// User routes (with JWT middleware)
-	userGroup := router.Group("/").Use(s.Jwt.CheckToken)
+	userGroup := router.Group("/").Use(s.CheckTokens)
 	{
 		userGroup.GET("/users", s.GetUsers)
 		userGroup.PUT("/user", s.DeleteUser)
@@ -66,7 +66,7 @@ func (s *Server) setupRouter() {
 	}
 
 	// Cache routes (with JWT middleware and cache middleware)
-	cacheGroup := router.Group("/").Use(s.Jwt.CheckToken, s.GetCache)
+	cacheGroup := router.Group("/").Use(s.CheckTokens, s.GetCache)
 	{
 		cacheGroup.GET("/chat/:sender_nubmer/:receiver_nubmer", s.GetMessagesBetweenUsers)
 		cacheGroup.GET("/user/:number", s.GetUser)

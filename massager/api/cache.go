@@ -25,7 +25,7 @@ func (s *Server) GetCache(ctx *gin.Context) {
 		ctx.Request.RequestURI,
 		ctx.Request.URL.RawQuery,
 	)
-	val, err := s.Cache.Get(ctx, key).Result()
+	val, err := s.RDB.Get(ctx, key).Result()
 	if err == nil {
 		ctx.Abort()
 
@@ -56,7 +56,7 @@ func (s *Server) GetCache(ctx *gin.Context) {
 	}
 
 	if ctx.Writer.Status() == http.StatusOK {
-		err = s.Cache.Set(ctx, key, jsonData, 10*time.Minute).Err()
+		err = s.RDB.Set(ctx, key, jsonData, 10*time.Minute).Err()
 		if err != nil {
 			return
 		}
