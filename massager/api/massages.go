@@ -9,7 +9,7 @@ import (
 )
 
 func (s *Server) Send(ctx *gin.Context) {
-	var massage models.Message
+	var massage *models.Message
 
 	err := ctx.Bind(&massage)
 	if err != nil {
@@ -18,7 +18,7 @@ func (s *Server) Send(ctx *gin.Context) {
 		})
 		return
 	}
-	err = s.Store.Send(&massage)
+	err = s.Store.Send(massage)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": "internal server error",
