@@ -40,7 +40,6 @@ func (s *Storege) GetUsers() ([]models.User, error) {
 func (s *Storege) DeleteUser(id uint) error {
 	var user models.User
 	if err := s.DB.Where("id = ?", id).First(&user).Error; err != nil {
-		//ctx.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 		return err
 	}
 
