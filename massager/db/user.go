@@ -8,11 +8,6 @@ import (
 
 func (s *Storege) SignUp(user *models.User) error {
 
-	if err := s.DB.Where("phone = ?", user.Phone).First(&user).Error; err == nil {
-
-		return fmt.Errorf("User already exists")
-	}
-
 	err := s.DB.Create(user).Error
 	if err != nil {
 		return err

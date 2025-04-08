@@ -17,7 +17,7 @@ type Message struct {
 
 type User struct {
 	ID           uint   `json:"id" gorm:"primaryKey"`
-	Name         string `json:"name" gorm:"type:varchar(100);not null"`
+	Name         string `json:"name" gorm:"type:varchar(100);unique;not null"`
 	Phone        string `json:"phone" gorm:"type:varchar(20);unique;not null"`
 	PasswordHash string `json:"-" gorm:"type:varchar(255);not null"`
 	Online       bool   `json:"online" gorm:"default:false"`
