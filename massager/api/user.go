@@ -34,7 +34,8 @@ func (s *Server) GetUser(ctx *gin.Context) {
 }
 
 func (s *Server) GetUsers(ctx *gin.Context) {
-	users, err := s.Store.GetUsers()
+	phone, _ := s.Jwt.GetPhone(ctx)
+	users, err := s.Store.GetUsers(phone)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
@@ -43,6 +44,8 @@ func (s *Server) GetUsers(ctx *gin.Context) {
 	if len(users) == 0 {
 		users = []models.User{}
 	}
+
+	ctx.Set(ctx.Request.RequestURI, users)
 
 	ctx.JSON(http.StatusOK, users)
 }
@@ -102,8 +105,6 @@ func (s *Server) UpdateUser(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": err})
 	}
-
-	ctx.Set(ctx.Request.RequestURI, user)
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "User updated successfully",
