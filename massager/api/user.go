@@ -108,7 +108,6 @@ func (s *Server) UpdateUser(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "User updated successfully",
-		"user":    user,
 	})
 }
 
