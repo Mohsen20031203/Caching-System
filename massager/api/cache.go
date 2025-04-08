@@ -19,14 +19,13 @@ type CustomResponseWriter struct {
 
 func (s *Server) AutoCache(ctx *gin.Context) {
 
-	key := fmt.Sprintf("%s|%s|%s|%s",
-		ctx.Request.Method,
+	key := fmt.Sprintf("%s|%s|%s",
 		ctx.Request.Host,
 		ctx.Request.RequestURI,
 		ctx.Request.URL.RawQuery,
 	)
 	val, err := s.RDB.Get(ctx, key).Result()
-	if err == nil {
+	if err == nil && ctx.Request.Method == "GET" {
 		ctx.Abort()
 
 		var rawData json.RawMessage
@@ -37,7 +36,7 @@ func (s *Server) AutoCache(ctx *gin.Context) {
 		}
 
 		return
-	} else if err != redis.Nil {
+	} else if err != redis.Nil && ctx.Request.Method == "GET" {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "cache retrieval error"})
 		return
 	}

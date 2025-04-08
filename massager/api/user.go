@@ -15,7 +15,7 @@ func (s *Server) GetUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
 	}
-	phone := s.Jwt.GetPhone(ctx)
+	phone, _ := s.Jwt.GetPhone(ctx)
 
 	if retval.Phone != phone {
 		retval.Phone = ""
@@ -70,7 +70,7 @@ func (s *Server) DeleteUser(ctx *gin.Context) {
 func (s *Server) UpdateUser(ctx *gin.Context) {
 	phone := ctx.Param("number")
 
-	phoneToken := s.Jwt.GetPhone(ctx)
+	phoneToken, _ := s.Jwt.GetPhone(ctx)
 	if phoneToken != phone {
 		ctx.JSON(http.StatusForbidden, gin.H{"error": "You do not have permission to perform this action"})
 		return
@@ -97,14 +97,13 @@ func (s *Server) UpdateUser(ctx *gin.Context) {
 	if userBody.Avatar != "" && user.Avatar != userBody.Avatar {
 		user.Avatar = userBody.Avatar
 	}
-	if userBody.Online != user.Online && user.Online != userBody.Online {
-		user.Online = userBody.Online
-	}
 
 	err = s.Store.UpdateUser(*user)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": err})
 	}
+
+	ctx.Set(ctx.Request.RequestURI, user)
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "User updated successfully",

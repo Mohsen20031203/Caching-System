@@ -55,9 +55,13 @@ func (server *Server) GenerateToken(ctx *gin.Context, username string, id int64,
 
 func (s *Server) CheckToken(ctx *gin.Context) {
 
-	phone := s.Jwt.GetPhone(ctx)
+	phone, err := s.Jwt.GetPhone(ctx)
+	if err != nil {
+		ctx.JSON(401, gin.H{"error": err})
+		return
+	}
 
-	err := s.RDB.Get(ctx, phone).Err()
+	err = s.RDB.Get(ctx, phone).Err()
 	if err != nil {
 		ctx.JSON(401, gin.H{"error": "Invalid token"})
 		ctx.Abort()

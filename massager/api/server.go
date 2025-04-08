@@ -62,7 +62,6 @@ func (s *Server) setupRouter() {
 		userGroup.PUT("/user", s.DeleteUser)
 		userGroup.POST("/send", s.Send)
 		userGroup.PUT("/read/:id", s.Read)
-		userGroup.POST("/update/:number", s.UpdateUser)
 	}
 
 	// Cache routes (with JWT middleware and cache middleware)
@@ -70,6 +69,7 @@ func (s *Server) setupRouter() {
 	{
 		cacheGroup.GET("/chat/:sender_nubmer/:receiver_nubmer", s.GetMessagesBetweenUsers)
 		cacheGroup.GET("/user/:number", s.GetUser)
+		cacheGroup.POST("/user/:number", s.UpdateUser)
 	}
 
 	userGroup.PUT("/logout", s.Logout)
