@@ -20,12 +20,17 @@ func (s *Server) Send(ctx *gin.Context) {
 		return
 	}
 
+	if massage.SenderNumber == "" {
+		massage.SenderNumber = phone
+	}
+
 	if phone != massage.SenderNumber {
 		ctx.JSON(http.StatusForbidden, gin.H{
 			"error": "you cant send messages this account",
 		})
 		return
 	}
+
 	err = s.Store.Send(massage)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{

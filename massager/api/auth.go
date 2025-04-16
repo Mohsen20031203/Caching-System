@@ -57,7 +57,7 @@ func (s *Server) CheckToken(ctx *gin.Context) {
 
 	phone, err := s.Jwt.GetPhone(ctx)
 	if err != nil {
-		ctx.JSON(401, gin.H{"error": err})
+		ctx.JSON(401, gin.H{"error": err.Error()})
 		return
 	}
 
