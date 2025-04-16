@@ -54,6 +54,7 @@ func (s *Server) DeleteUser(ctx *gin.Context) {
 	var user models.User
 
 	err := ctx.Bind(&user)
+	phone, err := s.Jwt.GetPhone(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": "bad request",
@@ -61,6 +62,12 @@ func (s *Server) DeleteUser(ctx *gin.Context) {
 		return
 	}
 
+	if phone != user.Phone {
+		ctx.JSON(http.StatusForbidden, gin.H{
+			"error": "you cant delete this account",
+		})
+		return
+	}
 	err = s.Store.DeleteUser(user.ID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete user"})
