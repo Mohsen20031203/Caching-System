@@ -12,9 +12,17 @@ func (s *Server) Send(ctx *gin.Context) {
 	var massage *models.Message
 
 	err := ctx.Bind(&massage)
+	phone, err := s.Jwt.GetPhone(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": "bad request",
+		})
+		return
+	}
+
+	if phone != massage.SenderNumber {
+		ctx.JSON(http.StatusForbidden, gin.H{
+			"error": "you cant send messages this account",
 		})
 		return
 	}
@@ -41,15 +49,17 @@ func (s *Server) Read(ctx *gin.Context) {
 }
 
 func (s *Server) GetMessagesBetweenUsers(ctx *gin.Context) {
+	senderString := ctx.Param("sender_nubmer")
+	receiverString := ctx.Param("receiver_nubmer")
 
-	senderID, err1 := strconv.ParseUint(ctx.Param("sender_nubmer"), 10, 64)
+	senderNumber, err1 := strconv.ParseUint(senderString, 10, 64)
 	if err1 != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": "bad request",
 		})
 		return
 	}
-	receiverID, err2 := strconv.ParseUint(ctx.Param("receiver_nubmer"), 10, 64)
+	receiverNumber, err2 := strconv.ParseUint(receiverString, 10, 64)
 	if err2 != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": "bad request",
@@ -57,7 +67,20 @@ func (s *Server) GetMessagesBetweenUsers(ctx *gin.Context) {
 		return
 	}
 
-	messages, err := s.Store.GetMessagesBetweenUsers(uint(senderID), uint(receiverID))
+	phone, err := s.Jwt.GetPhone(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Invalid or missing authentication token",
+		})
+		return
+	}
+	if phone != senderString || phone != receiverString {
+		ctx.JSON(http.StatusForbidden, gin.H{
+			"error": "you cant delete this account",
+		})
+		return
+	}
+	messages, err := s.Store.GetMessagesBetweenUsers(uint(senderNumber), uint(receiverNumber))
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": "bad request",
